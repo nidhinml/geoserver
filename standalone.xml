@@ -1,17 +1,139 @@
-<subsystem xmlns="urn:jboss:domain:datasources:4.0">
-    <datasources>
-        <datasource jndi-name="java:/PostgreSQLDS" pool-name="PostgreSQLDS">
-            <connection-url>jdbc:postgres://gis_db_b0x2_user:Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI@dpg-cp6mab6v3ddc73fmnbpg-a/gis_db_b0x2</connection-url>
-            <driver>postgresql</driver>
-            <security>
-                <user-name>gis_db_b0x2_user</user-name>
-                <password>Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI</password>
-            </security>
-        </datasource>
-        <drivers>
-            <driver name="postgresql" module="org.postgresql">
-                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-            </driver>
-        </drivers>
-    </datasources>
-</subsystem>
+<server xmlns="urn:jboss:domain:4.0">
+    <extensions>
+        <extension module="org.jboss.as.clustering.infinispan"/>
+        <extension module="org.jboss.as.connector"/>
+        <extension module="org.jboss.as.deployment-scanner"/>
+        <extension module="org.jboss.as.ee"/>
+        <extension module="org.jboss.as.ejb3"/>
+        <extension module="org.jboss.as.jaxrs"/>
+        <extension module="org.jboss.as.jdr"/>
+        <extension module="org.jboss.as.jmx"/>
+        <extension module="org.jboss.as.jpa"/>
+        <extension module="org.jboss.as.logging"/>
+        <extension module="org.jboss.as.mail"/>
+        <extension module="org.jboss.as.messaging"/>
+        <extension module="org.jboss.as.naming"/>
+        <extension module="org.jboss.as.pojo"/>
+        <extension module="org.jboss.as.remoting"/>
+        <extension module="org.jboss.as.sar"/>
+        <extension module="org.jboss.as.security"/>
+        <extension module="org.jboss.as.threads"/>
+        <extension module="org.jboss.as.transactions"/>
+        <extension module="org.jboss.as.webservices"/>
+        <extension module="org.jboss.as.weld"/>
+        <extension module="org.wildfly.extension.undertow"/>
+        <extension module="org.wildfly.extension.batch.jberet"/>
+        <extension module="org.wildfly.extension.messaging-activemq"/>
+    </extensions>
+
+    <management>
+        <management-interfaces>
+            <http-interface security-realm="ManagementRealm">
+                <http-upgrade enabled="true" sasl-authentication-factory="management-sasl-authentication"/>
+            </http-interface>
+        </management-interfaces>
+        <security-realms>
+            <security-realm name="ManagementRealm">
+                <server-identities>
+                    <ssl>
+                        <keystore path="management.keystore" relative-to="jboss.server.config.dir" keystore-password="password"/>
+                    </ssl>
+                </server-identities>
+                <authentication>
+                    <local default-user="$local" skip-group-loading="true"/>
+                    <properties path="mgmt-users.properties" relative-to="jboss.server.config.dir"/>
+                </authentication>
+                <authorization>
+                    <properties path="mgmt-groups.properties" relative-to="jboss.server.config.dir"/>
+                </authorization>
+            </security-realm>
+        </security-realms>
+    </management>
+
+    <profile>
+        <subsystem xmlns="urn:jboss:domain:datasources:4.0">
+            <datasources>
+                <datasource jndi-name="java:/PostgreSQLDS" pool-name="PostgreSQLDS" enabled="true" use-java-context="true">
+                    <connection-url>jdbc:postgres://gis_db_b0x2_user:Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI@dpg-cp6mab6v3ddc73fmnbpg-a/gis_db_b0x2</connection-url>
+                    <driver>postgresql</driver>
+                    <security>
+                        <user-name>gis_db_b0x2_user</user-name>
+                        <password>Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI</password>
+                    </security>
+                </datasource>
+                <drivers>
+                    <driver name="postgresql" module="org.postgresql">
+                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>
+        <subsystem xmlns="urn:jboss:domain:logging:3.0">
+            <console-handler name="CONSOLE">
+                <level name="INFO"/>
+                <formatter>
+                    <named-formatter name="COLOR-PATTERN"/>
+                </formatter>
+            </console-handler>
+            <periodic-rotating-file-handler name="FILE" autoflush="true">
+                <formatter>
+                    <named-formatter name="PATTERN"/>
+                </formatter>
+                <file relative-to="jboss.server.log.dir" path="server.log"/>
+                <suffix value=".yyyy-MM-dd"/>
+                <append value="true"/>
+            </periodic-rotating-file-handler>
+            <logger category="com.arjuna">
+                <level name="WARN"/>
+            </logger>
+            <logger category="org.jboss.as.config">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="sun.rmi">
+                <level name="WARN"/>
+            </logger>
+            <logger category="jacorb">
+                <level name="WARN"/>
+            </logger>
+            <logger category="javax.enterprise.resource.webcontainer.jsf.application">
+                <level name="INFO"/>
+            </logger>
+            <logger category="org.infinispan">
+                <level name="WARN"/>
+            </logger>
+            <root-logger>
+                <level name="INFO"/>
+                <handlers>
+                    <handler name="CONSOLE"/>
+                    <handler name="FILE"/>
+                </handlers>
+            </root-logger>
+            <formatter name="PATTERN">
+                <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
+            </formatter>
+            <formatter name="COLOR-PATTERN">
+                <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
+            </formatter>
+        </subsystem>
+        <!-- Add other subsystems here as needed -->
+    </profile>
+
+    <interfaces>
+        <interface name="management">
+            <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
+        </interface>
+        <interface name="public">
+            <inet-address value="${jboss.bind.address:0.0.0.0}"/>
+        </interface>
+    </interfaces>
+
+    <socket-binding-group name="standard-sockets" default-interface="public">
+        <socket-binding name="management-http" port="${jboss.management.http.port:9990}"/>
+        <socket-binding name="management-https" port="${jboss.management.https.port:9993}"/>
+        <socket-binding name="ajp" port="${jboss.ajp.port:8009}"/>
+        <socket-binding name="http" port="${jboss.http.port:8080}"/>
+        <socket-binding name="https" port="${jboss.https.port:8443}"/>
+        <socket-binding name="txn-recovery-environment" port="4712"/>
+        <socket-binding name="txn-status-manager" port="4713"/>
+    </socket-binding-group>
+</server>
