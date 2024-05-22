@@ -18,7 +18,7 @@ RUN curl -L -o /tmp/geoserver-${GEOSERVER_VERSION}-war.zip https://sourceforge.n
     mv /tmp/geoserver.war /opt/jboss/wildfly/standalone/deployments/
 
 # Copy standalone configuration with datasource settings
-COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
+# COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 # Expose default Wildfly port
 EXPOSE 8080
