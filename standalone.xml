@@ -1,0 +1,17 @@
+<subsystem xmlns="urn:jboss:domain:datasources:4.0">
+    <datasources>
+        <datasource jndi-name="java:/PostgreSQLDS" pool-name="PostgreSQLDS">
+            <connection-url>jdbc:postgres://gis_db_b0x2_user:Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI@dpg-cp6mab6v3ddc73fmnbpg-a/gis_db_b0x2</connection-url>
+            <driver>postgresql</driver>
+            <security>
+                <user-name>gis_db_b0x2_user</user-name>
+                <password>Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI</password>
+            </security>
+        </datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
