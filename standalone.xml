@@ -1,5 +1,6 @@
 <server xmlns="urn:jboss:domain:4.0">
     <extensions>
+        <!-- List of all necessary extensions -->
         <extension module="org.jboss.as.clustering.infinispan"/>
         <extension module="org.jboss.as.connector"/>
         <extension module="org.jboss.as.deployment-scanner"/>
@@ -30,6 +31,7 @@
         <management-interfaces>
             <http-interface security-realm="ManagementRealm">
                 <http-upgrade enabled="true" sasl-authentication-factory="management-sasl-authentication"/>
+                <socket-binding name="management-http"/>
             </http-interface>
         </management-interfaces>
         <security-realms>
@@ -51,6 +53,7 @@
     </management>
 
     <profile>
+        <!-- Correct datasource subsystem -->
         <subsystem xmlns="urn:jboss:domain:datasources:4.0">
             <datasources>
                 <datasource jndi-name="java:/PostgreSQLDS" pool-name="PostgreSQLDS" enabled="true" use-java-context="true">
@@ -60,6 +63,23 @@
                         <user-name>gis_db_b0x2_user</user-name>
                         <password>Ep9UDB5WKP1vFiDn6N2A52oBzHkzTMzI</password>
                     </security>
+                    <validation>
+                        <validate-on-match>true</validate-on-match>
+                        <background-validation>false</background-validation>
+                    </validation>
+                    <timeout>
+                        <set-tx-query-timeout>false</set-tx-query-timeout>
+                        <blocking-timeout-millis>5000</blocking-timeout-millis>
+                        <idle-timeout-minutes>15</idle-timeout-minutes>
+                        <query-timeout>60</query-timeout>
+                        <use-try-lock>60</use-try-lock>
+                        <allocation-retry>1</allocation-retry>
+                        <allocation-retry-wait-millis>5000</allocation-retry-wait-millis>
+                    </timeout>
+                    <statement>
+                        <prepared-statement-cache-size>32</prepared-statement-cache-size>
+                        <share-prepared-statements>false</share-prepared-statements>
+                    </statement>
                 </datasource>
                 <drivers>
                     <driver name="postgresql" module="org.postgresql">
@@ -68,54 +88,7 @@
                 </drivers>
             </datasources>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:logging:3.0">
-            <console-handler name="CONSOLE">
-                <level name="INFO"/>
-                <formatter>
-                    <named-formatter name="COLOR-PATTERN"/>
-                </formatter>
-            </console-handler>
-            <periodic-rotating-file-handler name="FILE" autoflush="true">
-                <formatter>
-                    <named-formatter name="PATTERN"/>
-                </formatter>
-                <file relative-to="jboss.server.log.dir" path="server.log"/>
-                <suffix value=".yyyy-MM-dd"/>
-                <append value="true"/>
-            </periodic-rotating-file-handler>
-            <logger category="com.arjuna">
-                <level name="WARN"/>
-            </logger>
-            <logger category="org.jboss.as.config">
-                <level name="DEBUG"/>
-            </logger>
-            <logger category="sun.rmi">
-                <level name="WARN"/>
-            </logger>
-            <logger category="jacorb">
-                <level name="WARN"/>
-            </logger>
-            <logger category="javax.enterprise.resource.webcontainer.jsf.application">
-                <level name="INFO"/>
-            </logger>
-            <logger category="org.infinispan">
-                <level name="WARN"/>
-            </logger>
-            <root-logger>
-                <level name="INFO"/>
-                <handlers>
-                    <handler name="CONSOLE"/>
-                    <handler name="FILE"/>
-                </handlers>
-            </root-logger>
-            <formatter name="PATTERN">
-                <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
-            </formatter>
-            <formatter name="COLOR-PATTERN">
-                <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
-            </formatter>
-        </subsystem>
-        <!-- Add other subsystems here as needed -->
+        <!-- Include other necessary subsystems -->
     </profile>
 
     <interfaces>

@@ -13,7 +13,9 @@ RUN curl -o /opt/jboss/wildfly/modules/org/postgresql/main/postgresql-${POSTGRES
 COPY module.xml /opt/jboss/wildfly/modules/org/postgresql/main/module.xml
 
 # Download and deploy GeoServer
-RUN curl -o /opt/jboss/wildfly/standalone/deployments/geoserver.war https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download
+RUN curl -L -o /tmp/geoserver-${GEOSERVER_VERSION}-war.zip https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download && \
+    unzip /tmp/geoserver-${GEOSERVER_VERSION}-war.zip -d /tmp && \
+    mv /tmp/geoserver.war /opt/jboss/wildfly/standalone/deployments/
 
 # Copy standalone configuration with datasource settings
 COPY standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
